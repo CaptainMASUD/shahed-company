@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FaBars, FaTimes, FaHome, FaUserAlt, FaServicestack, FaPhoneAlt, FaCog, FaSignOutAlt } from 'react-icons/fa'; // Import relevant icons
+import { FaBars, FaTimes, FaHome, FaUserAlt, FaServicestack, FaPhoneAlt, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { Avatar, Button, Dropdown } from 'flowbite-react';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../../App//EmployeeSlice/employeeSlice'; // Import logout action
+import { logout } from '../../App/EmployeeSlice/employeeSlice'; // Import logout action
 import { IoEnter } from "react-icons/io5";
 
 const Navbar = () => {
@@ -44,7 +44,6 @@ const Navbar = () => {
           </div>
           <div className="hidden md:flex items-center space-x-4">
             <div className="flex items-baseline space-x-4">
-              {/* Updated NavLink with a function for the className prop */}
               <NavLink 
                 to="/" 
                 className={({ isActive }) => 
@@ -88,30 +87,44 @@ const Navbar = () => {
                 <Dropdown
                   arrowIcon={false}
                   inline
-                  label={
+                  label={(
                     <Avatar
                       alt="user"
                       img={currentUser.profilePicture}
                       rounded
                       size="sm"
                     />
-                  }
+                  )}
                   className="ml-auto"
                 >
                   <Dropdown.Header>
                     <span className="block text-sm">{currentUser.username}</span>
                     <span className="block text-sm font-medium truncate">{currentUser.email}</span>
                   </Dropdown.Header>
+
+                  {/* Conditional rendering based on isEmployee and isAdmin */}
+                  {currentUser.isAdmin ? (
+                    <Link to="/admin">
+                      <Dropdown.Item>
+                        <FaUserAlt className="mr-2" />
+                        Admin Dashboard
+                      </Dropdown.Item>
+                    </Link>
+                  ) : null}
+
+                  {currentUser.isEmployee ? (
+                    <Link to="/emplyeeDashboard">
+                      <Dropdown.Item>
+                        <FaUserAlt className="mr-2" />
+                        Employee Dashboard
+                      </Dropdown.Item>
+                    </Link>
+                  ) : null}
+
                   <Link to="/profile">
                     <Dropdown.Item>
                       <FaUserAlt className="mr-2" />
                       Profile
-                    </Dropdown.Item>
-                  </Link>
-                  <Link to="/settings">
-                    <Dropdown.Item>
-                      <FaCog className="mr-2" />
-                      Settings
                     </Dropdown.Item>
                   </Link>
                   <Dropdown.Divider />
@@ -124,7 +137,7 @@ const Navbar = () => {
             ) : (
               <Link to="/login">
                 <button className='bg-gray-200 text-teal-500 w-20 flex p-[6px] font-semibold rounded-md hover:bg-gray-300 '>
-                <IoEnter className='w-5 h-5 mr-1 mt-1'/> Login
+                  <IoEnter className='w-5 h-5 mr-1 mt-1'/> Login
                 </button>
               </Link>
             )}
@@ -184,44 +197,32 @@ const Navbar = () => {
               <FaPhoneAlt className="mr-2 inline" />
               Contact
             </NavLink>
+
+            {/* Conditional rendering based on isEmployee and isAdmin for mobile */}
             {currentUser ? (
-              <div className="ml-auto">
-                <Dropdown
-                  arrowIcon={false}
-                  inline
-                  label={
-                    <Avatar
-                      alt="user"
-                      img={currentUser.profilePicture}
-                      rounded
-                      size="sm"
-                    />
-                  }
-                  className="ml-auto"
-                >
-                  <Dropdown.Header>
-                    <span className="block text-sm">{currentUser.username}</span>
-                    <span className="block text-sm font-medium truncate">{currentUser.email}</span>
-                  </Dropdown.Header>
-                  <Link to="/profile">
+              <>
+                {currentUser.isAdmin && (
+                  <Link to="/admin">
                     <Dropdown.Item>
                       <FaUserAlt className="mr-2" />
-                      Profile
+                      Admin Dashboard
                     </Dropdown.Item>
                   </Link>
-                  <Link to="#">
+                )}
+                {currentUser.isEmployee && (
+                  <Link to="/emplyeeDashboard">
                     <Dropdown.Item>
-                      <FaCog className="mr-2" />
-                      Settings
+                      <FaUserAlt className="mr-2" />
+                      Employee Dashboard
                     </Dropdown.Item>
                   </Link>
-                  <Dropdown.Divider />
-                  <Dropdown.Item onClick={handleLogout}>
-                    <FaSignOutAlt className="mr-2" />
-                    Sign out
-                  </Dropdown.Item>
-                </Dropdown>
-              </div>
+                )}
+                <Dropdown.Divider />
+                <Dropdown.Item onClick={handleLogout}>
+                  <FaSignOutAlt className="mr-2" />
+                  Sign out
+                </Dropdown.Item>
+              </>
             ) : (
               <Link to="/sign-up">
                 <Button gradientDuoTone="purpleToBlue" outline>

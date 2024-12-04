@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FaUser, FaClipboardList, FaSpinner } from 'react-icons/fa';
+import { MdDescription, MdAssignment } from 'react-icons/md';
 
 const CreateTask = () => {
   const [formData, setFormData] = useState({
@@ -42,40 +44,63 @@ const CreateTask = () => {
     }
   };
 
-  // Auto-clear success/error messages after 3 seconds
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => setMessage(null), 3000);
-      return () => clearTimeout(timer); // Clear timer on unmount or when message changes
+      return () => clearTimeout(timer);
     }
     if (error) {
       const timer = setTimeout(() => setError(null), 3000);
-      return () => clearTimeout(timer); // Clear timer on unmount or when error changes
+      return () => clearTimeout(timer);
     }
   }, [message, error]);
 
   return (
-    <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-md rounded-md">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Create Task</h1>
-      {message && <p className="text-green-600 mb-4">{message}</p>}
-      {error && <p className="text-red-600 mb-4">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="user_id" className="block text-gray-700 font-medium mb-2">
-            Assign to User ID (optional)
-          </label>
-          <input
-            type="text"
-            id="user_id"
-            name="user_id"
-            value={formData.user_id}
-            onChange={handleChange}
-            placeholder="Enter User ID or leave blank"
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+    <div className="max-w-3xl mx-auto mt-10 p-8 bg-white shadow-lg rounded-lg">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+        <FaClipboardList className="mr-3 text-teal-500" />
+        Create Task
+      </h1>
+      {message && <p className="text-green-600 mb-4 font-semibold">{message}</p>}
+      {error && <p className="text-red-600 mb-4 font-semibold">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="relative">
+            <label htmlFor="user_id" className="block text-gray-700 font-medium mb-2 flex items-center">
+              <FaUser className="mr-2 text-teal-500" />
+              Assign to User ID (optional)
+            </label>
+            <input
+              type="text"
+              id="user_id"
+              name="user_id"
+              value={formData.user_id}
+              onChange={handleChange}
+              placeholder="Enter User ID or leave blank"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
+            />
+          </div>
+          <div className="relative">
+            <label htmlFor="status" className="block text-gray-700 font-medium mb-2 flex items-center">
+              <MdAssignment className="mr-2 text-teal-500" />
+              Status
+            </label>
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
+            >
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+              <option value="in-progress">In Progress</option>
+            </select>
+          </div>
         </div>
-        <div className="mb-4">
-          <label htmlFor="description" className="block text-gray-700 font-medium mb-2">
+        <div className="relative">
+          <label htmlFor="description" className="block text-gray-700 font-medium mb-2 flex items-center">
+            <MdDescription className="mr-2 text-teal-500" />
             Task Description
           </label>
           <textarea
@@ -85,27 +110,12 @@ const CreateTask = () => {
             onChange={handleChange}
             placeholder="Describe the task"
             required
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400 h-24"
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="status" className="block text-gray-700 font-medium mb-2">
-            Status
-          </label>
-          <select
-            id="status"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="in-progress">In Progress</option>
-          </select>
-        </div>
-        <div className="mb-4">
-          <label htmlFor="details" className="block text-gray-700 font-medium mb-2">
+        <div className="relative">
+          <label htmlFor="details" className="block text-gray-700 font-medium mb-2 flex items-center">
+            <MdDescription className="mr-2 text-teal-500" />
             Task Details
           </label>
           <textarea
@@ -114,15 +124,22 @@ const CreateTask = () => {
             value={formData.details}
             onChange={handleChange}
             placeholder="Provide additional details (optional)"
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400 h-32"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300 disabled:opacity-50"
+          className="w-full bg-teal-500 text-white py-3 px-6 rounded-md hover:bg-teal-600 transition duration-300 disabled:opacity-50 flex items-center justify-center"
         >
-          {loading ? 'Creating Task...' : 'Create Task'}
+          {loading ? (
+            <>
+              <FaSpinner className="animate-spin mr-2" />
+              Creating Task...
+            </>
+          ) : (
+            'Create Task'
+          )}
         </button>
       </form>
     </div>
@@ -130,3 +147,4 @@ const CreateTask = () => {
 };
 
 export default CreateTask;
+

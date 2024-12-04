@@ -44,7 +44,6 @@ export const updateTaskSubmission = async (req, res) => {
   try {
     const { submission_id } = req.params; // Submission ID from the route parameters
     const { submission_text, isAccepted } = req.body; // Fields to update from the request body
-    const { id: user_id, role } = req.user; // Authenticated user's ID and role
 
     const submission = await TaskSubmission.findById(submission_id);
 
@@ -52,31 +51,10 @@ export const updateTaskSubmission = async (req, res) => {
       return res.status(404).json({ message: 'Submission not found.' });
     }
 
-    // Role-based update permissions
-    if (role === 'employee') {
-      if (submission.employee_id !== user_id) {
-        return res.status(403).json({ message: 'You are not authorized to update this submission.' });
-      }
-
-      // Employees cannot modify `isAccepted`
-      if (isAccepted !== undefined) {
-        return res.status(403).json({ message: 'Employees cannot update acceptance status.' });
-      }
-
-      // Update employee's own submission text
-      await submission.update({ submission_text });
-      return res.status(200).json({ message: 'Task submission updated successfully.', submission });
-    }
-
-    if (role === 'admin') {
-      // Admins can update `isAccepted` or `submission_text`
-      await submission.update({ submission_text, isAccepted });
-      return res.status(200).json({ message: 'Task submission updated successfully.', submission });
-    }
-
-    res.status(403).json({ message: 'Unauthorized access.' });
+    // Update the submission fields without restrictions
+    await submission.update({ submission_text, isAccepted });
+    res.status(200).json({ message: 'Task submission updated successfully.', submission });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-

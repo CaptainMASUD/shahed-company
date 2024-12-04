@@ -1,14 +1,11 @@
-// routes/taskSubmissionRoutes.js
 import express from 'express';
 import { submitTaskResponse, getTaskSubmissions, updateTaskSubmission } from '../controllers/TaskSubmissionController.js';
-import auth from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/:task_id', auth.authMiddleware, submitTaskResponse);
-router.get('/:task_id', auth.authMiddleware, getTaskSubmissions);
-router.patch('/:submission_id', auth.authMiddleware, auth.employeeAuthMiddleware, updateTaskSubmission);
-
-
+// Routes without restrictions
+router.post('/:task_id', submitTaskResponse);
+router.get('/:task_id', getTaskSubmissions);
+router.patch('/:submission_id', updateTaskSubmission);
 
 export default router;

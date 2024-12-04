@@ -1,20 +1,18 @@
-// routes/taskRoutes.js
 import express from 'express';
 import { createTask, getTasks, updateTask, deleteTask } from '../controllers/TaskController.js';
-import auth from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Create a task (admin only)
-router.post('/', auth.authMiddleware, createTask);
+// Create a task
+router.post('/', createTask);
 
-// Get tasks for the current user (admin and employee)
-router.get('/', auth.authMiddleware, getTasks);
+// Get all tasks
+router.get('/', getTasks);
 
-// Update a task (admin only)
-router.patch('/:taskId', auth.authMiddleware, updateTask);
+// Update a task
+router.patch('/:taskId', updateTask);
 
-// Delete a task (admin only)
-router.delete('/:taskId', auth.authMiddleware, deleteTask);
+// Delete a task
+router.delete('/:taskId', deleteTask);
 
 export default router;

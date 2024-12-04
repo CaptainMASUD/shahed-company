@@ -1,4 +1,3 @@
-// models/Task.model.js
 import db from '../config/db.js';
 
 class Task {
@@ -24,20 +23,19 @@ class Task {
     });
   }
 
-// models/Task.model.js
-static findForAllEmployees() {
-  return new Promise((resolve, reject) => {
-    db.query('SELECT * FROM tasks', (err, result) => {  // Remove WHERE user_id IS NULL to get all tasks
-      if (err) return reject(err);
-      resolve(result);
+  // Find all tasks for all employees
+  static findForAllEmployees() {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM tasks', (err, result) => {  // No WHERE clause to get all tasks
+        if (err) return reject(err);
+        resolve(result);
+      });
     });
-  });
-}
+  }
 
-
+  // Find tasks by user ID
   static findByUserId(user_id) {
     return new Promise((resolve, reject) => {
-      // Fetch tasks for a specific user or for all employees (tasks with user_id = NULL)
       db.query(
         'SELECT * FROM tasks WHERE user_id = ? OR user_id IS NULL', 
         [user_id], 
@@ -48,7 +46,20 @@ static findForAllEmployees() {
       );
     });
   }
-  
+
+  // Find a task by ID
+  static findById(id) {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM tasks WHERE id = ?', [id], (err, result) => {
+        if (err) return reject(err);
+        if (result.length === 0) {
+          return reject(new Error('Task not found'));
+        }
+        resolve(result[0]); // Return the first task found
+      });
+    });
+  }
+
   // Update a task by ID
   update() {
     return new Promise((resolve, reject) => {
