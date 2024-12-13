@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useSelector } from 'react-redux'; // Import useSelector
 import { FaTasks } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { GoTasklist } from "react-icons/go";
@@ -11,6 +12,10 @@ const AllTasks = () => {
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [submissionText, setSubmissionText] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Access current user from Redux state
+  const currentUser = useSelector((state) => state.employee.currentUser); // Adjust the slice name if different
+  const userId = currentUser?.id;
 
   // Fetch tasks on component mount
   useEffect(() => {
@@ -33,8 +38,6 @@ const AllTasks = () => {
     setSelectedTaskId(taskId);
     setShowModal(true);
   };
-  console.log('Submitting task with ID:', selectedTaskId);
-
 
   // Close the modal
   const handleCloseModal = () => {
@@ -43,17 +46,19 @@ const AllTasks = () => {
     setSuccessMessage('');
   };
 
-  // Handle task submission
   const handleSubmitTask = async () => {
     if (!submissionText.trim()) {
       setSuccessMessage('Please enter a valid response.');
       return;
     }
-
+  
     try {
       const response = await axios.post(
         `http://localhost:5000/api/submit/${selectedTaskId}`,
-        { submission_text: submissionText },
+        {
+          submission_text: submissionText,
+          employee_id: userId, // Pass user ID in the body
+        },
         { withCredentials: true }
       );
       setSuccessMessage(response.data.message);
@@ -62,6 +67,7 @@ const AllTasks = () => {
       setSuccessMessage(error.response?.data?.error || 'An error occurred while submitting the task.');
     }
   };
+  
 
   return (
     <div className="container mx-auto p-6">

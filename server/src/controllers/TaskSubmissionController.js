@@ -1,15 +1,17 @@
 import TaskSubmission from '../models/TaskSubmission.model.js';
 
-// Submit or reply to a task
 export const submitTaskResponse = async (req, res) => {
   try {
     const { task_id } = req.params; // Task ID from the route parameters
-    const { submission_text } = req.body; // Submission text from the request body
-    const employee_id = req.user.id; // Authenticated user's ID
+    const { submission_text, employee_id } = req.body; // Submission text and employee ID from the request body
 
     // Validate input
     if (!submission_text || typeof submission_text !== 'string' || submission_text.trim() === '') {
       return res.status(400).json({ message: 'Submission text must be a non-empty string.' });
+    }
+
+    if (!employee_id) {
+      return res.status(400).json({ message: 'Employee ID is required.' });
     }
 
     const submission = new TaskSubmission({ task_id, employee_id, submission_text });
